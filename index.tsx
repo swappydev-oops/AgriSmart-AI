@@ -1,4 +1,5 @@
 
+
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import ReactDOM from 'react-dom/client';
 import { GoogleGenAI, Chat, Part } from "@google/genai";
@@ -256,6 +257,7 @@ async function getChatResponse(
       return "Please provide some input.";
     }
 
+    // FIX: The `sendMessage` method expects the message content wrapped in a message object.
     const response = await chatRef.current.sendMessage({ message: parts });
     return response.text;
 
