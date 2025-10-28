@@ -1,4 +1,6 @@
 import { GoogleGenAI, Chat, Part, Type } from "@google/genai";
+// FIX: Import MutableRefObject to fix React namespace error.
+import type { MutableRefObject } from 'react';
 import type { UserProfile, BotType } from '../types';
 import { mockTutorialVideos } from '../data/mockData';
 
@@ -72,7 +74,8 @@ const getSystemInstruction = (botType: BotType, userProfile: UserProfile): strin
 };
 
 export async function getChatResponse(
-  chatRef: React.MutableRefObject<Chat | null>,
+  // FIX: Use MutableRefObject type directly instead of React.MutableRefObject.
+  chatRef: MutableRefObject<Chat | null>,
   botType: BotType,
   userProfile: UserProfile,
   language: 'en' | 'mr' | 'hi',
