@@ -1,9 +1,12 @@
-
-
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import ReactDOM from 'react-dom/client';
 import { GoogleGenAI, Chat, Part } from "@google/genai";
 import type { MutableRefObject } from 'react';
+
+// WARNING: FOR TESTING PURPOSES ONLY. 
+// Replace with your actual key. DO NOT commit this to a public repository.
+// Anyone who can view your website's source code can see this key.
+const API_KEY = "AIzaSyDeKWOKb12HzODMrCNs9htrus-riuf8lsM";
 
 // --- TYPES (from types.ts) ---
 interface UserProfile {
@@ -151,8 +154,6 @@ const PlayIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height
 
 
 // --- GEMINI SERVICE (from services/geminiService.ts) ---
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
 const getLanguageDirective = (language: 'en' | 'mr' | 'hi'): string => {
   const langMap = {
     en: "English",
@@ -230,6 +231,7 @@ async function getChatResponse(
   imageMimeType: string | null
 ): Promise<string> {
 
+  const ai = new GoogleGenAI({ apiKey: API_KEY });
   const systemInstruction = `${getSystemInstruction(botType, userProfile)} ${getLanguageDirective(language)}`;
 
   if (!chatRef.current) {
@@ -257,7 +259,6 @@ async function getChatResponse(
       return "Please provide some input.";
     }
 
-    // FIX: The `sendMessage` method expects the message content wrapped in a message object.
     const response = await chatRef.current.sendMessage({ message: parts });
     return response.text;
 
@@ -267,6 +268,9 @@ async function getChatResponse(
     if (error instanceof Error) {
         if (error.message.includes('NETWORK_ERROR')) {
             throw new Error('Could not connect to AI service. Please check your connection.');
+        }
+        if (error.message.includes('API key not valid')) {
+             throw new Error('The provided API Key is not valid. Please check it and try again.');
         }
     }
     throw new Error('Analysis failed, please try again.');
@@ -627,6 +631,22 @@ const App: React.FC = () => {
     const handleEndChat = () => {
         setCurrentView('dashboard');
     };
+    
+    if (API_KEY === "YOUR_GEMINI_API_KEY_HERE") {
+        return (
+            <div className="flex items-center justify-center min-h-screen bg-red-100">
+              <div className="w-full max-w-md p-8 space-y-4 bg-white rounded-lg shadow-md text-center">
+                <h2 className="text-2xl font-bold text-red-700">Configuration Needed</h2>
+                <p className="text-gray-700">
+                  Please replace the placeholder API key in the `index.tsx` file with your actual Gemini API key to run the application.
+                </p>
+                <p className="text-sm text-gray-500">
+                  Remember to keep your API key private and not to commit it to public repositories.
+                </p>
+              </div>
+            </div>
+        );
+    }
 
     if (currentView === 'auth') {
         return <AuthComponent onLogin={handleLogin} />;
