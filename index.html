@@ -21,6 +21,20 @@
 </head>
   <body class="bg-gray-100">
     <div id="root"></div>
+
+    <!-- Polyfill for process.env to work in browser environments -->
+    <script>
+      // This is necessary because the Gemini library expects process.env.API_KEY.
+      // In a browser environment without a build step, 'process' is not defined.
+      // This polyfill creates the object structure, allowing the hosting environment
+      // to inject the API key without causing a runtime error.
+      window.process = {
+        env: {
+          API_KEY: ""
+        }
+      };
+    </script>
+    
     <!-- Change script type to text/babel and add presets for React and TypeScript -->
     <script type="text/babel" data-type="module" data-presets="react,typescript" src="./index.tsx"></script>
   </body>
